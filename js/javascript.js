@@ -1,4 +1,32 @@
 $(document).ready(function () {
+    $('.hidden').hide();
+    $('.day').show();
+    $(".content-main").addClass("dy");
+    $('.daily').click(function () {
+        $(".content-main").addClass("dy");
+        $(".content-main").removeClass("wy my iy");
+        $(".day").show();
+        $('.D').hide();
+    });
+    $('.weekly').click(function () {
+        $(".content-main").addClass("wy");
+        $(".content-main").removeClass("dy my iy");
+        $(".week").show();
+        $('.W').hide();
+    });
+    $('.monthly').click(function () {
+        $(".content-main").addClass("my");
+        $(".content-main").removeClass("dy wy iy");
+        $(".month").show();
+        $('.M').hide();
+    });
+    $('.irregularly').click(function () {
+        $(".content-main").addClass("iy");
+        $(".content-main").removeClass("dy wy my");
+        $(".irregular").show();
+        $('.I').hide();
+    });
+
     $(".add").click(function () {
         $(".add").hide();
         $(".content-main-checkboxs").append

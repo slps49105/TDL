@@ -35,8 +35,11 @@ session_start();
                 <li>
                     <a href=""><img src="img/person-fill-gear.svg">Profile</a>
                 </li>
-                <li>
-                    <a href=""><img src="img/box-arrow-right.svg">Logout</a>
+                <li class="logout">
+                    <a href="logout.php"><img src="img/box-arrow-right.svg">Logout</a>
+                </li>
+                <li class="login">
+                    <a href="login.php"><img src="img/box-arrow-right.svg">Login</a>
                 </li>
             </ul>
         </div>
@@ -58,13 +61,20 @@ session_start();
             });
         </script>
         <div id="clock"></div>
-        <div class="content-title">Daily To Do List</div>
         <div class="content-main">
+            <div class="content-title">Daily To Do List</div>
             <div class="content-main-line">
                 <div class="content-main-line-bar">
                     <?php
                     if (isset($_SESSION['username'])) {
                         $username = $_SESSION['username'];
+                        echo "
+                                <style>
+                                .login {
+                                    display: none;
+                                }
+                                </style>
+                        ";
                         if (isset($_POST['sure'])) {
                             $todoss = $_POST["todoss"];
                             $sql_query2 = "INSERT INTO daily (listname, username) VALUES ('$todoss', '$username')";
@@ -113,7 +123,25 @@ session_start();
                         //     echo "沒有資料";
                         // }
                     } else {
-                        echo "未登入";
+                        echo "
+                            <div class=\"nlogin\">未登入</div>
+                            <style>
+
+                            .logout {
+                                display: none;
+                            }
+
+                            .add {
+                                display: none;
+                            }
+
+                            .nlogin {
+                                top: 20vh;
+                                position: relative;
+                            }
+
+                            </style>
+                        ";
                     }
                     ?>
                     <!-- <script>
@@ -131,82 +159,351 @@ session_start();
                     </script> -->
                 </div>
             </div>
-
-            <div class="content-main-checkboxs checkbox-wrapper-11">
+            <div class="content-main-list">
+                <ul class="content-main-ul">
+                    <li class="daily dy">Daily</li>
+                    <li class="weekly wy">Weekly</li>
+                    <li class="monthly my">Monthly</li>
+                    <li class="irregularly iy">Irregularly</li>
+                </ul>
+            </div>
+            <div id="mycalendar"></div>
+            <script>
+                dycalendar.draw({
+                    target: '#mycalendar',
+                    type: 'month',
+                    highlighttargetdate: true,
+                    prevnextbutton: 'show'
+                });
+            </script>
+            <div class="hidden day W M I content-main-checkboxs checkbox-wrapper-11">
                 <?php
-                $result = $db_link->query($sql_query = "SELECT * FROM daily ORDER BY id ASC");
-                while ($row = $result->fetch_assoc()) {
-                    $id = $row["id"];
-                    $listname = $row["listname"];
-                    $checking = $row["checking"];
-                    echo "
-                    <input type=\"checkbox\" id=\"$id\" class=\"checked checked$id\" $checking>
-                    <label for=\"$id\" class=\"labels label$id\">$listname
-                        <a class=\"ilnk-dark update hide$id update$id\" value=\"更新\"><img class=\"pencil-square\" src=\"img/pencil-square.svg\"></a>
-                        <a class=\"delete hide$id delete$id\" value=\"刪除\"><img class=\"trath\" src=\"img/trash.svg\"></a>
-                    </label>
-                    ";
-                    echo " 
-                    <script type=\"text/javascript\">
-                        $(document).ready(function() {
-                            $(\".update$id\").click(function () {
-                                $(\".label$id\").append(
-                                    `
-                                    <input type=\"text\" id=\"dateup\" name=\"date\" value=\"$listname\">
-                                    <input type=\"submit\" class=\"tem update dateup$id\" value=\"更新\">
-                                    <input type=\"button\" class=\"tem cancel\" value=\"取消\">
-                                    `
-                                );
-                                $(\".hide$id\").hide();
-                            });
+                if (isset($_SESSION['username'])) {
+                    $username = $_SESSION['username'];
+                    $result = $db_link->query($sql_query = "SELECT * FROM daily WHERE username = '$username' ORDER BY id ASC");
+                    if (isset($result)) {
+                        while ($row = $result->fetch_assoc()) {
+                            $Did = $row["id"];
+                            $listname = $row["listname"];
+                            $checking = $row["checking"];
+                            echo "
+                                <input type=\"checkbox\" id=\"D$Did\" class=\"checked checkedD$Did\" $checking>
+                                <label for=\"D$Did\" class=\"labels labelD$Did\">$listname
+                                    <a class=\"ilnk-dark update hideD$Did updateD$Did\" value=\"更新\"><img class=\"pencil-square\" src=\"img/pencil-square.svg\"></a>
+                                    <a class=\"delete hideD$Did deleteD$Did\" value=\"刪除\"><img class=\"trath\" src=\"img/trash.svg\"></a>
+                                </label>
+                            ";
+                            echo " 
+                                <script type=\"text/javascript\">
+                                    $(document).ready(function() {
+                                        $(\".updateD$Did\").click(function () {
+                                            $(\".labelD$Did\").append(
+                                                `
+                                                <input type=\"text\" id=\"dateup\" name=\"date\" value=\"$listname\">
+                                                <input type=\"submit\" class=\"tem update dateupD$Did\" value=\"更新\">
+                                                <input type=\"button\" class=\"tem cancel\" value=\"取消\">
+                                                `
+                                            );
+                                            $(\".hideD$Did\").hide();
+                                        });
 
-                            $(\".delete$id\").click(function(){
-                                $.ajax({
-                                    type: \"POST\",
-                                    url: \"func/delete.php\",
-                                    dataType: \"json\",
-                                    data: {
-                                        id: $id,
-                                    }
-                                });
-                            })
+                                        $(\".deleteD$Did\").click(function(){
+                                            $.ajax({
+                                                type: \"POST\",
+                                                url: \"func/delete.php\",
+                                                dataType: \"json\",
+                                                data: {
+                                                    Did: $Did,
+                                                }
+                                            });
+                                        })
 
-                            $(\".label$id\").on('click',\".dateup$id\", function () {
-                                $.ajax({
-                                    type: \"POST\", //傳送方式
-                                    url: \"func/update.php\", //傳送目的地
-                                    dataType: \"json\", //資料格式
-                                    data: {
-                                        id: $id,
-                                        dataup: $(\"#dateup\").val()
-                                    }
-                                });
-                            });
+                                        $(\".labelD$Did\").on('click',\".dateupD$Did\", function () {
+                                            $.ajax({
+                                                type: \"POST\", //傳送方式
+                                                url: \"func/update.php\", //傳送目的地
+                                                dataType: \"json\", //資料格式
+                                                data: {
+                                                    Did: $Did,
+                                                    dataup: $(\"#dateup\").val()
+                                                }
+                                            });
+                                        });
 
-                            $(\".checked$id\").change(function() {
-                                if (this.checked) {
-                                    $.ajax({
-                                        type: \"POST\", //傳送方式
-                                        url: \"func/checkedT.php\", //傳送目的地
-                                        dataType: \"json\", //資料格式
-                                        data: {
-                                            id: $id
+                                        $(\".checkedD$Did\").change(function() {
+                                            if (this.checked) {
+                                                $.ajax({
+                                                    type: \"POST\", //傳送方式
+                                                    url: \"func/checkedT.php\", //傳送目的地
+                                                    dataType: \"json\", //資料格式
+                                                    data: {
+                                                        Did: $Did
+                                                    }
+                                                })
+                                            } else {
+                                                $.ajax({
+                                                    type: \"POST\", //傳送方式
+                                                    url: \"func/checkedF.php\", //傳送目的地
+                                                    dataType: \"json\", //資料格式
+                                                    data: {
+                                                        Did: $Did
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    });
+                                </script>
+                            ";
+                        }
+                    } else {
+                    }
+                } else {
+                }
+                ?>
+            </div>
+            <div class="hidden week D M I content-main-checkboxs checkbox-wrapper-11">
+                <?php
+                if (isset($_SESSION['username'])) {
+                    $username = $_SESSION['username'];
+                    $result = $db_link->query($sql_query = "SELECT * FROM weekly WHERE username = '$username' ORDER BY id ASC");
+                    while ($row = $result->fetch_assoc()) {
+                        $Wid = $row["id"];
+                        $listname = $row["listname"];
+                        $checking = $row["checking"];
+                        echo "
+                            <input type=\"checkbox\" id=\"W$Wid\" class=\"checked checkedW$Wid\" $checking>
+                            <label for=\"W$Wid\" class=\"labels labelW$Wid\">$listname
+                                <a class=\"ilnk-dark update hideW$Wid updateW$Wid\" value=\"更新\"><img class=\"pencil-square\" src=\"img/pencil-square.svg\"></a>
+                                <a class=\"delete hideW$Wid deleteW$Wid\" value=\"刪除\"><img class=\"trath\" src=\"img/trash.svg\"></a>
+                            </label>
+                        ";
+                        echo " 
+                            <script type=\"text/javascript\">
+                                $(document).ready(function() {
+                                    $(\".updateW$Wid\").click(function () {
+                                        $(\".labelW$Wid\").append(
+                                            `
+                                            <input type=\"text\" id=\"dateup\" name=\"date\" value=\"$listname\">
+                                            <input type=\"submit\" class=\"tem update dateupW$Wid\" value=\"更新\">
+                                            <input type=\"button\" class=\"tem cancel\" value=\"取消\">
+                                            `
+                                        );
+                                        $(\".hideW$Wid\").hide();
+                                    });
+
+                                    $(\".deleteW$Wid\").click(function(){
+                                        $.ajax({
+                                            type: \"POST\",
+                                            url: \"func/delete.php\",
+                                            dataType: \"json\",
+                                            data: {
+                                                Wid: $Wid,
+                                            }
+                                        });
+                                    })
+
+                                    $(\".labelW$Wid\").on('click',\".dateupW$Wid\", function () {
+                                        $.ajax({
+                                            type: \"POST\", //傳送方式
+                                            url: \"func/update.php\", //傳送目的地
+                                            dataType: \"json\", //資料格式
+                                            data: {
+                                                Wid: $Wid,
+                                                dataup: $(\"#dateup\").val()
+                                            }
+                                        });
+                                    });
+
+                                    $(\".checkedW$Wid\").change(function() {
+                                        if (this.checked) {
+                                            $.ajax({
+                                                type: \"POST\", //傳送方式
+                                                url: \"func/checkedT.php\", //傳送目的地
+                                                dataType: \"json\", //資料格式
+                                                data: {
+                                                    Wid: $Wid
+                                                }
+                                            })
+                                        } else {
+                                            $.ajax({
+                                                type: \"POST\", //傳送方式
+                                                url: \"func/checkedF.php\", //傳送目的地
+                                                dataType: \"json\", //資料格式
+                                                data: {
+                                                    Wid: $Wid
+                                                }
+                                            })
                                         }
                                     })
-                                } else {
-                                    $.ajax({
-                                        type: \"POST\", //傳送方式
-                                        url: \"func/checkedF.php\", //傳送目的地
-                                        dataType: \"json\", //資料格式
-                                        data: {
-                                            id: $id
+                                });
+                            </script>
+                        ";
+                    }
+                } else {
+                }
+                ?>
+            </div>
+            <div class="hidden month D W I content-main-checkboxs checkbox-wrapper-11">
+                <?php
+                if (isset($_SESSION['username'])) {
+                    $username = $_SESSION['username'];
+                    $result = $db_link->query($sql_query = "SELECT * FROM monthly WHERE username = '$username' ORDER BY id ASC");
+                    while ($row = $result->fetch_assoc()) {
+                        $Mid = $row["id"];
+                        $listname = $row["listname"];
+                        $checking = $row["checking"];
+                        echo "
+                            <input type=\"checkbox\" id=\"M$Mid\" class=\"checked checkedM$Mid\" $checking>
+                            <label for=\"M$Mid\" class=\"labels labelM$Mid\">$listname
+                                <a class=\"ilnk-dark update hideM$Mid updateM$Mid\" value=\"更新\"><img class=\"pencil-square\" src=\"img/pencil-square.svg\"></a>
+                                <a class=\"delete hideM$Mid deleteM$Mid\" value=\"刪除\"><img class=\"trath\" src=\"img/trash.svg\"></a>
+                            </label>
+                        ";
+                        echo " 
+                            <script type=\"text/javascript\">
+                                $(document).ready(function() {
+                                    $(\".updateM$Mid\").click(function () {
+                                        $(\".labelM$Mid\").append(
+                                            `
+                                            <input type=\"text\" id=\"dateup\" name=\"date\" value=\"$listname\">
+                                            <input type=\"submit\" class=\"tem update dateupM$Mid\" value=\"更新\">
+                                            <input type=\"button\" class=\"tem cancel\" value=\"取消\">
+                                            `
+                                        );
+                                        $(\".hideM$Mid\").hide();
+                                    });
+
+                                    $(\".deleteM$Mid\").click(function(){
+                                        $.ajax({
+                                            type: \"POST\",
+                                            url: \"func/delete.php\",
+                                            dataType: \"json\",
+                                            data: {
+                                                Mid: $Mid,
+                                            }
+                                        });
+                                    })
+
+                                    $(\".labelM$Mid\").on('click',\".dateupM$Mid\", function () {
+                                        $.ajax({
+                                            type: \"POST\", //傳送方式
+                                            url: \"func/update.php\", //傳送目的地
+                                            dataType: \"json\", //資料格式
+                                            data: {
+                                                Mid: $Mid,
+                                                dataup: $(\"#dateup\").val()
+                                            }
+                                        });
+                                    });
+
+                                    $(\".checkedM$Mid\").change(function() {
+                                        if (this.checked) {
+                                            $.ajax({
+                                                type: \"POST\", //傳送方式
+                                                url: \"func/checkedT.php\", //傳送目的地
+                                                dataType: \"json\", //資料格式
+                                                data: {
+                                                    Mid: $Mid
+                                                }
+                                            })
+                                        } else {
+                                            $.ajax({
+                                                type: \"POST\", //傳送方式
+                                                url: \"func/checkedF.php\", //傳送目的地
+                                                dataType: \"json\", //資料格式
+                                                data: {
+                                                    Mid: $Mid
+                                                }
+                                            })
                                         }
                                     })
-                                }
-                            })
-                        });
-                    </script>
-                    ";
+                                });
+                            </script>
+                        ";
+                    }
+                } else {
+                }
+                ?>
+            </div>
+            <div class="hidden irregular D W M content-main-checkboxs checkbox-wrapper-11">
+                <?php
+                if (isset($_SESSION['username'])) {
+                    $username = $_SESSION['username'];
+                    $result = $db_link->query($sql_query = "SELECT * FROM irregularly WHERE username = '$username' ORDER BY id ASC");
+                    while ($row = $result->fetch_assoc()) {
+                        $Iid = $row["id"];
+                        $listname = $row["listname"];
+                        $checking = $row["checking"];
+                        echo "
+                                <input type=\"checkbox\" id=\"I$Iid\" class=\"checked checkedI$Iid\" $checking>
+                                <label for=\"I$Iid\" class=\"labels labelI$Iid\">$listname
+                                    <a class=\"ilnk-dark update hideI$Iid updateI$Iid\" value=\"更新\"><img class=\"pencil-square\" src=\"img/pencil-square.svg\"></a>
+                                    <a class=\"delete hideI$Iid deleteI$Iid\" value=\"刪除\"><img class=\"trath\" src=\"img/trash.svg\"></a>
+                                </label>
+                            ";
+                        echo " 
+                                <script type=\"text/javascript\">
+                                    $(document).ready(function() {
+                                        $(\".updateI$Iid\").click(function () {
+                                            $(\".labelI$Iid\").append(
+                                                `
+                                                <input type=\"text\" id=\"dateup\" name=\"date\" value=\"$listname\">
+                                                <input type=\"submit\" class=\"tem update dateupI$Iid\" value=\"更新\">
+                                                <input type=\"button\" class=\"tem cancel\" value=\"取消\">
+                                                `
+                                            );
+                                            $(\".hideI$Iid\").hide();
+                                        });
+
+                                        $(\".deleteI$Iid\").click(function(){
+                                            $.ajax({
+                                                type: \"POST\",
+                                                url: \"func/delete.php\",
+                                                dataType: \"json\",
+                                                data: {
+                                                    Iid: $Iid,
+                                                }
+                                            });
+                                        })
+
+                                        $(\".labelI$Iid\").on('click',\".dateupI$Iid\", function () {
+                                            $.ajax({
+                                                type: \"POST\", //傳送方式
+                                                url: \"func/update.php\", //傳送目的地
+                                                dataType: \"json\", //資料格式
+                                                data: {
+                                                    Iid: $Iid,
+                                                    dataup: $(\"#dateup\").val()
+                                                }
+                                            });
+                                        });
+
+                                        $(\".checkedI$Iid\").change(function() {
+                                            if (this.checked) {
+                                                $.ajax({
+                                                    type: \"POST\", //傳送方式
+                                                    url: \"func/checkedT.php\", //傳送目的地
+                                                    dataType: \"json\", //資料格式
+                                                    data: {
+                                                        Iid: $Iid
+                                                    }
+                                                })
+                                            } else {
+                                                $.ajax({
+                                                    type: \"POST\", //傳送方式
+                                                    url: \"func/checkedF.php\", //傳送目的地
+                                                    dataType: \"json\", //資料格式
+                                                    data: {
+                                                        Iid: $Iid
+                                                    }
+                                                })
+                                            }
+                                        })
+                                    });
+                                </script>
+                            ";
+                    }
+                } else {
                 }
                 ?>
             </div>
