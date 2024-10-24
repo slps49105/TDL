@@ -168,12 +168,28 @@ li {
     color: #000;
     border-radius: 4px;
     font-weight: 600;
-}
-
-#mycalendar table td {
     padding: 10px;
 }
 
+#mycalendar table tr:not(:nth-child(1)) td {
+    color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    padding: 10px;
+}
+
+.dycalendar-target-date {
+    background: #fff !important;
+    color: #000 !important;
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0) !important;
+}
+
+#mycalendar table td:hover {
+    background: #fff !important;
+    color: #000 !important;
+    text-shadow: 0 0 0 rgba(0, 0, 0, 0) !important;
+}
 
 #clock {
     position: fixed;
