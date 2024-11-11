@@ -23,15 +23,6 @@ session_start();
         <div class="header-logo">TDL</div>
         <div class="header-list">
             <ul class="header-list-ul">
-                <li class=""><a href="" class="text-decoration-none">D</a></li>
-                <li class=""><a href="" class="text-decoration-none">W</a></li>
-                <li class=""><a href="" class="text-decoration-none">M</a></li>
-                <li class=""><a href="" class="text-decoration-none">I</a></li>
-            </ul>
-        </div>
-        <div class="header-profile"><img src="img/gear.svg"></div>
-        <div class="header-menu">
-            <ul>
                 <li>
                     <a href=""><img src="img/person-fill-gear.svg">Profile</a>
                 </li>
@@ -62,66 +53,19 @@ session_start();
         </script>
         <div id="clock"></div>
         <div class="content-main">
-            <div class="content-title">Daily To Do List</div>
+            <div class="content-title">To Do List</div>
             <div class="content-main-line">
                 <div class="content-main-line-bar">
                     <?php
                     if (isset($_SESSION['username'])) {
                         $username = $_SESSION['username'];
                         echo "
-                                <style>
-                                .login {
-                                    display: none;
-                                }
-                                </style>
+                            <style>
+                            .login {
+                                display: none;
+                            }
+                            </style>
                         ";
-                        if (isset($_POST['sure'])) {
-                            $todoss = $_POST["todoss"];
-                            $sql_query2 = "INSERT INTO daily (listname, username) VALUES ('$todoss', '$username')";
-                            mysqli_query($db_link, $sql_query2);
-                            header("Location:home.php");
-                        }
-                        // $res1 = "SELECT * FROM `daily` WHERE username = '$username'";
-                        // $res2 = "SELECT * FROM `daily` WHERE checking = 'checked'";
-                        // $result1 = mysqli_query($db_link, $res1);
-                        // $result2 = mysqli_query($db_link, $res2);
-                        // if ($result1->num_rows > 0) {
-                        //     $num1 = mysqli_num_rows($result1);
-                        //     $num2 = mysqli_num_rows($result2);
-                        //     $num4 = 1 / $num1 * 100;
-                        //     echo "
-                        //         <style>
-                        //         .content-main-line-bar {
-                        //             position: relative;
-                        //         }
-
-                        //         .bar {
-                        //             background-color: #445FAA;
-                        //             position: relative;
-                        //             bottom: 0;
-                        //             width: 8px;
-                        //             height: " . $num4 . "px;
-                        //             box-sizing: border-box;
-                        //             animation: grow 0.1s ease-out forwards;
-                        //             transform-origin: top;
-                        //         }
-
-                        //         @keyframes grow {
-                        //             from {
-                        //                 transform: scaleY(0);
-                        //             }
-                        //         }
-                        //         </style> 
-                        //     ";
-
-                        //     for ($i = 0; $i <= $num2 - 1; $i++) {
-                        //         echo "
-                        //         <div class=\"bar\"></div>
-                        //         ";
-                        //     }
-                        // } else {
-                        //     echo "沒有資料";
-                        // }
                     } else {
                         echo "
                             <div class=\"nlogin\">未登入</div>
@@ -144,19 +88,6 @@ session_start();
                         ";
                     }
                     ?>
-                    <!-- <script>
-                        $(document).ready(function() {
-                            $(".checked").change(function() {
-                                if (this.checked) {
-                                    $(".content-main-line-bar").append("<div class = \"bar\"></div>")
-                                } else {
-                                    $(".bar").last().slideUp(100, function() {
-                                        $(this).remove();
-                                    });
-                                }
-                            })
-                        })
-                    </script> -->
                 </div>
             </div>
             <div class="content-main-list">
@@ -207,57 +138,28 @@ session_start();
                                             $(\".hideD$Did\").hide();
                                         });
 
-                                        $(\".deleteD$Did\").click(function(){
-                                            $.ajax({
-                                                type: \"POST\",
-                                                url: \"func/delete.php\",
-                                                dataType: \"json\",
-                                                data: {
-                                                    Did: $Did,
-                                                }
-                                            });
-                                        })
-
                                         $(\".labelD$Did\").on('click',\".dateupD$Did\", function () {
-                                            $.ajax({
-                                                type: \"POST\", //傳送方式
-                                                url: \"func/update.php\", //傳送目的地
-                                                dataType: \"json\", //資料格式
-                                                data: {
-                                                    Did: $Did,
-                                                    dataup: $(\"#dateup\").val()
-                                                }
-                                            });
+                                            const Dudata = $(\"#dateup\").val();
+                                            phpSel(\"func/update.php\",\"Did\",\"$Did\", \"dataup\", Dudata);
+                                        });
+
+                                        $(\".deleteD$Did\").click(function(){
+                                            phpSel(\"func/delete.php\",\"Did\",\"$Did\");
+                                            $(\".checkedD$Did, .labelD$Did\").remove();
                                         });
 
                                         $(\".checkedD$Did\").change(function() {
                                             if (this.checked) {
-                                                $.ajax({
-                                                    type: \"POST\", //傳送方式
-                                                    url: \"func/checkedT.php\", //傳送目的地
-                                                    dataType: \"json\", //資料格式
-                                                    data: {
-                                                        Did: $Did
-                                                    }
-                                                })
+                                                phpSel(\"func/checkedT.php\",\"Did\",\"$Did\");
                                             } else {
-                                                $.ajax({
-                                                    type: \"POST\", //傳送方式
-                                                    url: \"func/checkedF.php\", //傳送目的地
-                                                    dataType: \"json\", //資料格式
-                                                    data: {
-                                                        Did: $Did
-                                                    }
-                                                })
+                                                phpSel(\"func/checkedF.php\",\"Did\",\"$Did\");
                                             }
-                                        })
+                                        });
                                     });
                                 </script>
                             ";
                         }
-                    } else {
                     }
-                } else {
                 }
                 ?>
             </div>
@@ -291,55 +193,27 @@ session_start();
                                         $(\".hideW$Wid\").hide();
                                     });
 
-                                    $(\".deleteW$Wid\").click(function(){
-                                        $.ajax({
-                                            type: \"POST\",
-                                            url: \"func/delete.php\",
-                                            dataType: \"json\",
-                                            data: {
-                                                Wid: $Wid,
-                                            }
-                                        });
-                                    })
-
                                     $(\".labelW$Wid\").on('click',\".dateupW$Wid\", function () {
-                                        $.ajax({
-                                            type: \"POST\", //傳送方式
-                                            url: \"func/update.php\", //傳送目的地
-                                            dataType: \"json\", //資料格式
-                                            data: {
-                                                Wid: $Wid,
-                                                dataup: $(\"#dateup\").val()
-                                            }
-                                        });
+                                        const Dudata = $(\"#dateup\").val();
+                                        phpSel(\"func/update.php\",\"Wid\",\"$Wid\", \"dataup\", Dudata);
+                                    });
+
+                                    $(\".deleteW$Wid\").click(function(){
+                                        phpSel(\"func/delete.php\",\"Wid\",\"$Wid\");
+                                        $(\".checkedW$Wid, .labelW$Wid\").remove();
                                     });
 
                                     $(\".checkedW$Wid\").change(function() {
                                         if (this.checked) {
-                                            $.ajax({
-                                                type: \"POST\", //傳送方式
-                                                url: \"func/checkedT.php\", //傳送目的地
-                                                dataType: \"json\", //資料格式
-                                                data: {
-                                                    Wid: $Wid
-                                                }
-                                            })
+                                            phpSel(\"func/checkedT.php\",\"Wid\",\"$Wid\");
                                         } else {
-                                            $.ajax({
-                                                type: \"POST\", //傳送方式
-                                                url: \"func/checkedF.php\", //傳送目的地
-                                                dataType: \"json\", //資料格式
-                                                data: {
-                                                    Wid: $Wid
-                                                }
-                                            })
+                                            phpSel(\"func/checkedF.php\",\"Wid\",\"$Wid\");
                                         }
-                                    })
+                                    });
                                 });
                             </script>
                         ";
                     }
-                } else {
                 }
                 ?>
             </div>
@@ -373,55 +247,27 @@ session_start();
                                         $(\".hideM$Mid\").hide();
                                     });
 
-                                    $(\".deleteM$Mid\").click(function(){
-                                        $.ajax({
-                                            type: \"POST\",
-                                            url: \"func/delete.php\",
-                                            dataType: \"json\",
-                                            data: {
-                                                Mid: $Mid,
-                                            }
-                                        });
-                                    })
-
                                     $(\".labelM$Mid\").on('click',\".dateupM$Mid\", function () {
-                                        $.ajax({
-                                            type: \"POST\", //傳送方式
-                                            url: \"func/update.php\", //傳送目的地
-                                            dataType: \"json\", //資料格式
-                                            data: {
-                                                Mid: $Mid,
-                                                dataup: $(\"#dateup\").val()
-                                            }
-                                        });
+                                        const Dudata = $(\"#dateup\").val();
+                                        phpSel(\"func/update.php\",\"Mid\",\"$Mid\", \"dataup\", Dudata);
+                                    });
+
+                                    $(\".deleteM$Mid\").click(function(){
+                                        phpSel(\"func/delete.php\",\"Mid\",\"$Mid\");
+                                        $(\".checkedM$Mid, .labelM$Mid\").remove();
                                     });
 
                                     $(\".checkedM$Mid\").change(function() {
                                         if (this.checked) {
-                                            $.ajax({
-                                                type: \"POST\", //傳送方式
-                                                url: \"func/checkedT.php\", //傳送目的地
-                                                dataType: \"json\", //資料格式
-                                                data: {
-                                                    Mid: $Mid
-                                                }
-                                            })
+                                            phpSel(\"func/checkedT.php\",\"Mid\",\"$Mid\");
                                         } else {
-                                            $.ajax({
-                                                type: \"POST\", //傳送方式
-                                                url: \"func/checkedF.php\", //傳送目的地
-                                                dataType: \"json\", //資料格式
-                                                data: {
-                                                    Mid: $Mid
-                                                }
-                                            })
+                                            phpSel(\"func/checkedF.php\",\"Mid\",\"$Mid\");
                                         }
-                                    })
+                                    });
                                 });
                             </script>
                         ";
                     }
-                } else {
                 }
                 ?>
             </div>
@@ -433,77 +279,59 @@ session_start();
                     while ($row = $result->fetch_assoc()) {
                         $Iid = $row["id"];
                         $listname = $row["listname"];
+                        $deadline = $row["deadline"];
                         $checking = $row["checking"];
                         echo "
-                                <input type=\"checkbox\" id=\"I$Iid\" class=\"checked checkedI$Iid\" $checking>
-                                <label for=\"I$Iid\" class=\"labels labelI$Iid\">$listname
-                                    <a class=\"ilnk-dark update hideI$Iid updateI$Iid\" value=\"更新\"><img class=\"pencil-square\" src=\"img/pencil-square.svg\"></a>
-                                    <a class=\"delete hideI$Iid deleteI$Iid\" value=\"刪除\"><img class=\"trath\" src=\"img/trash.svg\"></a>
-                                </label>
+                            <input type=\"checkbox\" id=\"I$Iid\" class=\"checked checkedI$Iid\" $checking>
+                            <label for=\"I$Iid\" class=\"labels labelI$Iid\">$listname
+                                <div>$deadline</div>
+                                <a class=\"ilnk-dark update hideI$Iid updateI$Iid\" value=\"更新\"><img class=\"pencil-square\" src=\"img/pencil-square.svg\"></a>
+                                <a class=\"delete hideI$Iid deleteI$Iid\" value=\"刪除\"><img class=\"trath\" src=\"img/trash.svg\"></a>
+                            </label>
                             ";
                         echo " 
-                                <script type=\"text/javascript\">
-                                    $(document).ready(function() {
-                                        $(\".updateI$Iid\").click(function () {
-                                            $(\".labelI$Iid\").append(
-                                                `
-                                                <input type=\"text\" id=\"dateup\" name=\"date\" value=\"$listname\">
-                                                <input type=\"submit\" class=\"tem update dateupI$Iid\" value=\"更新\">
-                                                <input type=\"button\" class=\"tem cancel\" value=\"取消\">
-                                                `
-                                            );
-                                            $(\".hideI$Iid\").hide();
-                                        });
-
-                                        $(\".deleteI$Iid\").click(function(){
-                                            $.ajax({
-                                                type: \"POST\",
-                                                url: \"func/delete.php\",
-                                                dataType: \"json\",
-                                                data: {
-                                                    Iid: $Iid,
-                                                }
-                                            });
-                                        })
-
-                                        $(\".labelI$Iid\").on('click',\".dateupI$Iid\", function () {
-                                            $.ajax({
-                                                type: \"POST\", //傳送方式
-                                                url: \"func/update.php\", //傳送目的地
-                                                dataType: \"json\", //資料格式
-                                                data: {
-                                                    Iid: $Iid,
-                                                    dataup: $(\"#dateup\").val()
-                                                }
-                                            });
-                                        });
-
-                                        $(\".checkedI$Iid\").change(function() {
-                                            if (this.checked) {
-                                                $.ajax({
-                                                    type: \"POST\", //傳送方式
-                                                    url: \"func/checkedT.php\", //傳送目的地
-                                                    dataType: \"json\", //資料格式
-                                                    data: {
-                                                        Iid: $Iid
-                                                    }
-                                                })
-                                            } else {
-                                                $.ajax({
-                                                    type: \"POST\", //傳送方式
-                                                    url: \"func/checkedF.php\", //傳送目的地
-                                                    dataType: \"json\", //資料格式
-                                                    data: {
-                                                        Iid: $Iid
-                                                    }
-                                                })
-                                            }
-                                        })
+                            <script type=\"text/javascript\">
+                                $(document).ready(function() {
+                                    $(\".updateI$Iid\").click(function () {
+                                        $(\".labelI$Iid\").append(
+                                            `
+                                            <input type=\"text\" id=\"dateup\" name=\"date\" value=\"$listname\">
+                                            <input type=\"submit\" class=\"tem update dateupI$Iid\" value=\"更新\">
+                                            <input type=\"button\" class=\"tem cancel\" value=\"取消\">
+                                            `
+                                        );
+                                        $(\".hideI$Iid\").hide();
                                     });
-                                </script>
-                            ";
+
+                                    $(\".labelI$Iid\").on('click',\".dateupI$Iid\", function () {
+                                        $.ajax({
+                                            type: \"POST\", //傳送方式
+                                            url: \"func/update.php\", //傳送目的地
+                                            dataType: \"json\", //資料格式
+                                            data: {
+                                                Iid: $Iid,
+                                                dataup: $(\"#dateup\").val(),
+                                                dataup2: $(\"\").val()
+                                            }
+                                        });
+                                    });
+
+                                    $(\".deleteI$Iid\").click(function(){
+                                        phpSel(\"func/delete.php\",\"Iid\",\"$Iid\");
+                                        $(\".checkedI$Iid, .labelI$Iid\").remove();
+                                    })
+
+                                    $(\".checkedI$Iid\").change(function() {
+                                        if (this.checked) {
+                                            phpSel(\"func/checkedT.php\",\"Iid\",\"$Iid\");
+                                        } else {
+                                            phpSel(\"func/checkedF.php\",\"Iid\",\"$Iid\");
+                                        }
+                                    });
+                                });
+                            </script>
+                        ";
                     }
-                } else {
                 }
                 ?>
             </div>
