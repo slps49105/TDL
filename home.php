@@ -24,13 +24,13 @@ session_start();
         <div class="header-list">
             <ul class="header-list-ul">
                 <li>
-                    <a href=""><img src="img/person-fill-gear.svg">Profile</a>
+                    <a href="profile.php"><img src="img/person-fill-gear.svg">檔案</a>
                 </li>
                 <li class="logout">
-                    <a href="logout.php"><img src="img/box-arrow-right.svg">Logout</a>
+                    <a href="logout.php"><img src="img/box-arrow-right.svg">登出</a>
                 </li>
                 <li class="login">
-                    <a href="login.php"><img src="img/box-arrow-right.svg">Login</a>
+                    <a href="login.php"><img src="img/box-arrow-right.svg">登入</a>
                 </li>
             </ul>
         </div>
